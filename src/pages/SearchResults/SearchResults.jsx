@@ -1,11 +1,11 @@
 import React from "react";
-import { FlightResult, HotelResult } from "../../components";
+import { FlightResult } from "../../components";
 
 const SearchResults = () => {
   return (
     <>
     
-        <div class="container mt-3">
+        <div className="container mt-3">
           <FlightResult />
         </div>
 

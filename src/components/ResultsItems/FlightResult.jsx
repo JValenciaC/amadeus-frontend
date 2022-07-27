@@ -1,106 +1,98 @@
 import React from "react";
-import getFlightOffers from "../../helpers/getFlightOffers";
-import axios from "axios";
 
-const FlightResult = () => {
-  const [Offers, setOffers] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
+import "./FlightResult.css";
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const result = await axios.get(
-          "http://localhost:5000/api/v1.0/flightOffers/all"
-        );
+import nonStopFlightLogo from "../../assets/assets/img/nonstop.png";
+import FlightInfoCard from "./FlightInfoCard";
+import { flightResultSelector } from "../../redux/selector";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-        setOffers(result.data);
-      } catch (error) {
-        setError(error);
-      }
-      setIsLoading(false);
-    };
-    fetchData();
-  }, []);
+const FlightLogo = () => {
+  return <img src={nonStopFlightLogo} width="32" height="32"></img>;
+};
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-  if (!Offers) {
-    return <div>No offers</div>;
-  }
+const FlightResult = (props) => {
+  // const {id} = React.useParams();
+  const navigate = useNavigate();
+  const flightResult = useSelector(flightResultSelector);
 
-  const flightOffers = getFlightOffers();
-
-  console.log(flightOffers);
+  const handlePriceClick = (id) => {
+    navigate(`/PriceInfoCard/${id}`);
+  };
 
   return (
     <>
-      {/* <h1>FlightResult</h1>
-      <hr />
-      <ul>
-        {Offers.map( (offer, index) => (
-        <li key={ index }> source: { offer.source }
-</li>
-         // key is used to identify each element in the list   
-        ))} 
-
-
-
-      </ul> */}
-   
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-              <div class="col">
-                <div class="card shadow-sm">
-                  <svg
-                    class="bd-placeholder-img card-img-top"
-                    width="100%"
-                    height="225"
-                    xmlns="http://www.w3.org/2000/svg"
-                    role="img"
-                    aria-label="Placeholder: Thumbnail"
-                    preserveAspectRatio="xMidYMid slice"
-                    focusable="false"
+      <div className="row row-cols-1 mb-4">
+        <div className="col">
+          <div className="card shadow-sm">
+            <svg
+              className="bd-placeholder-img card-img-top"
+              width="100%"
+              height="40"
+              xmlns="http://www.w3.org/2000/svg"
+              role="img"
+              aria-label="Placeholder: Thumbnail"
+              preserveAspectRatio="xMidYMid slice"
+              focusable="false"
+            >
+              <FlightLogo />
+              <rect width="100%" height="100%" fill="#55595c" />
+            </svg>
+            <div className="card shadow-sm m-3 p-4">
+              <span className="text-muted">
+                <small
+                  className={
+                    props.type === "flight-offer"
+                      ? "text-danger text-capitalize font-bold "
+                      : "text"
+                  }
+                >
+                  Type: {props.type}
+                </small>
+                <span className="text m-10">
+                  <small className={"text"}>Source: {props.source}</small>
+                </span>
+              <span className="text">
+                <small className={"text"}>Duration: {props.itineraries?.map((item)=> item.duration)}</small>
+              </span>
+              </span>
+            </div>
+            <div className="card-body">
+              {props.itineraries?.map((itineraries) =>
+                itineraries.segments.map((segment, index) => (
+                  <FlightInfoCard className="mb-5" key={index} {...segment} />
+                ))
+              )}
+              <div className="d-flex justify-content-between align-items-center p-md-2">
+                <div className="btn-group">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => handlePriceClick(props.id)}
                   >
-                    <title>Placeholder</title>
-                    <rect width="100%" height="100%" fill="#55595c" />
-                    <text x="50%" y="40%" fill="#eceeef" dy=".3em">
-                      Thumbnail
-                    </text>
-                  </svg>
-
-                  <div class="card-body">
-                    <p class="card-text">
-                      This is a wider card with supporting text below as a
-                      natural lead-in to additional content. This content is a
-                      little bit longer.
-                    </p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div class="btn-group">
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-outline-secondary"
-                        >
-                          View
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-outline-secondary"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                      <small class="text-muted">9 mins</small>
-                    </div>
-                  </div>
+                    Price
+                  </button>
                 </div>
+                <span className="text-muted">
+                  <small className="text-muted">
+                    Number Of Bookable Seats: {props.numberOfBookableSeats}
+                  </small>
+                </span>
+
+                <span className="text-muted">
+                  <small className="text-muted">
+                    Validating Airline Codes: {props.validatingAirlineCodes}{" "}
+                  </small>
+                </span>
+                <small className="text-muted">
+                  Last Ticket Date: {props.lastTicketingDate}
+                </small>
               </div>
             </div>
-
+          </div>
+        </div>
+      </div>
     </>
   );
 };

@@ -5,8 +5,6 @@ const SearchFlight = () => {
   return (
     <>
       <SearchBox />
-      <h1>Search Fligth</h1>
-
     </>
   );
 };
